@@ -1,0 +1,83 @@
+# 📘 Capítulo 5 – Tela de Orçamentos (`ui/tela_orcamentos.py`)
+
+## 🎯 Objetivo
+Implementar a tela inicial do usuário, onde ele poderá:
+- Listar todos os arquivos `.orcpai` da pasta `orcamentos/`
+- Criar um novo orçamento
+- Excluir um orçamento existente
+- Exportar o orçamento selecionado (para Excel)
+- Abrir o orçamento para visualizar os painéis
+
+---
+
+## 📄 Estrutura da classe `TelaOrcamentos`
+```python
+import customtkinter as ctk
+from core import file_manager
+from core.models import Orcamento
+import os
+from datetime import datetime
+
+class TelaOrcamentos(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.label = ctk.CTkLabel(self, text="Orçamentos disponíveis", font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        # Lista de arquivos
+        self.lista_arquivos = ctk.CTkOptionMenu(self, values=self.carregar_lista())
+        self.lista_arquivos.pack(pady=10)
+
+        # Botões padrão do menu lateral
+        self.btn_adicionar = ctk.CTkButton(self, text="Adicionar Orçamento", command=self.adicionar_orcamento)
+        self.btn_adicionar.pack(pady=5)
+
+        self.btn_excluir = ctk.CTkButton(self, text="Excluir Orçamento", command=self.excluir_orcamento)
+        self.btn_excluir.pack(pady=5)
+
+        self.btn_abrir = ctk.CTkButton(self, text="Abrir Orçamento", command=self.abrir_orcamento)
+        self.btn_abrir.pack(pady=5)
+
+        self.btn_exportar = ctk.CTkButton(self, text="Exportar para Excel", command=self.exportar_excel)
+        self.btn_exportar.pack(pady=5)
+
+    def carregar_lista(self):
+        arquivos = file_manager.listar_arquivos_orcamentos()
+        return [os.path.basename(a) for a in arquivos]
+
+    def adicionar_orcamento(self):
+        nome = f"orcamento_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        orcamento = Orcamento(nome=nome, data=datetime.now().strftime('%Y-%m-%d'))
+        caminho = f"orcamentos/{nome}.orcpai"
+        file_manager.salvar_orcamento(orcamento, caminho)
+        self.lista_arquivos.configure(values=self.carregar_lista())
+
+    def excluir_orcamento(self):
+        selecionado = self.lista_arquivos.get()
+        if selecionado:
+            os.remove(f"orcamentos/{selecionado}")
+            self.lista_arquivos.configure(values=self.carregar_lista())
+
+    def abrir_orcamento(self):
+        from ui.tela_paineis import TelaPaineis
+        selecionado = self.lista_arquivos.get()
+        if selecionado:
+            caminho = f"orcamentos/{selecionado}"
+            orcamento = file_manager.carregar_orcamento(caminho)
+
+            for widget in self.master.winfo_children():
+                widget.destroy()
+
+            TelaPaineis(self.master, orcamento, caminho).pack(fill="both", expand=True)
+
+    def exportar_excel(self):
+        # Função será implementada no Capítulo 10
+        pass
+```
+
+---
+
+✅ **Capítulo 5 concluído.**
+
+Próximo: Capítulo 6 – Tela de Painéis (`tela_paineis.py`)

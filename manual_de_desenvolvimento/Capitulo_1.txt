@@ -1,0 +1,62 @@
+# 📘 Capítulo 1 – Estrutura do Projeto e Organização de Pastas
+
+## 🎯 Objetivo
+Criar a estrutura de diretórios e arquivos base do sistema "ORCPAI" (Orçamento de Painéis), com separação clara entre interface, lógica, dados e arquivos do usuário.
+
+---
+
+## 📂 Estrutura de Diretórios Inicial
+
+```
+painel_orcamento/              # Raiz do projeto
+├── main.py                    # Inicia a aplicação
+├── ui/                        # Todas as interfaces gráficas (telas)
+│   ├── main_window.py
+│   ├── tela_orcamentos.py
+│   ├── tela_paineis.py
+│   ├── tela_componentes.py
+│   ├── tela_admin.py
+│   └── menu_lateral.py
+├── core/                      # Lógica de negócio
+│   ├── models.py              # Classes Orcamento, Painel, Componente
+│   ├── file_manager.py        # Leitura/gravação de arquivos .orcpai
+│   └── regras_engine.py       # Processador de regras de componentes
+├── data/                      # Arquivos de dados e regras
+│   └── regras.json
+├── orcamentos/                # Onde os arquivos .orcpai são salvos
+│   └── (ex: predio_sede.orcpai)
+├── assets/                    # Ícones, logos e elementos visuais
+└── README.md                  # Instruções e documentação do projeto
+```
+
+---
+
+## 📄 Explicações das Pastas
+
+- **`main.py`**: ponto de entrada. Carrega a janela principal.
+- **`ui/`**: telas visuais com `customtkinter`, organizadas por função.
+- **`core/`**: onde fica toda a lógica de dados, modelos e salvamento de arquivos.
+- **`data/`**: armazena regras de cálculo dos componentes em `regras.json`.
+- **`orcamentos/`**: pasta onde os orçamentos `.orcpai` ficam salvos.
+- **`assets/`**: imagens, ícones, temas etc.
+
+---
+
+## 📁 Instruções para a IA Programadora (ex: Cursor)
+
+1. Criar as pastas listadas acima.
+2. Criar arquivos `.py` vazios para cada item listado (exceto `.json` e `.orcpai`, que virão depois).
+3. Garantir que todos os arquivos tenham `encoding='utf-8'` e estejam prontos para receber conteúdo nos próximos capítulos.
+4. No `README.md`, inserir o seguinte texto inicial:
+
+```markdown
+# ORCPAI – Sistema de Orçamento de Painéis
+
+Este é um sistema interno para criação e organização de orçamentos de painéis elétricos. Utiliza arquivos `.orcpai` como base de dados e gera planilhas Excel com os componentes necessários.
+```
+
+---
+
+✅ **Capítulo 1 concluído.**
+
+Próximo: Capítulo 2 – Modelagem de Dados (models.py)

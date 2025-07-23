@@ -1,0 +1,78 @@
+# 📘 Capítulo 6 – Tela de Painéis (`ui/tela_paineis.py`)
+
+## 🎯 Objetivo
+Implementar a tela de listagem dos painéis de um orçamento carregado, permitindo:
+- Listar painéis
+- Adicionar novo painel
+- Excluir painel existente
+- Salvar alterações no arquivo `.orcpai`
+- Acessar tela de componentes de um painel específico
+
+---
+
+## 📄 Estrutura da classe `TelaPaineis`
+```python
+import customtkinter as ctk
+from core.models import Painel
+from core import file_manager
+import os
+
+class TelaPaineis(ctk.CTkFrame):
+    def __init__(self, master, orcamento, caminho_arquivo):
+        super().__init__(master)
+        self.orcamento = orcamento
+        self.caminho_arquivo = caminho_arquivo
+
+        self.label = ctk.CTkLabel(self, text=f"Painéis de {orcamento.nome}", font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        self.lista_paineis = ctk.CTkOptionMenu(self, values=self.get_lista_nomes())
+        self.lista_paineis.pack(pady=10)
+
+        self.btn_adicionar = ctk.CTkButton(self, text="Adicionar Painel", command=self.adicionar_painel)
+        self.btn_adicionar.pack(pady=5)
+
+        self.btn_excluir = ctk.CTkButton(self, text="Excluir Painel", command=self.excluir_painel)
+        self.btn_excluir.pack(pady=5)
+
+        self.btn_abrir = ctk.CTkButton(self, text="Abrir Painel", command=self.abrir_painel)
+        self.btn_abrir.pack(pady=5)
+
+        self.btn_salvar = ctk.CTkButton(self, text="Salvar Alterações", command=self.salvar)
+        self.btn_salvar.pack(pady=5)
+
+    def get_lista_nomes(self):
+        return [painel.nome for painel in self.orcamento.paineis]
+
+    def atualizar_lista(self):
+        self.lista_paineis.configure(values=self.get_lista_nomes())
+
+    def adicionar_painel(self):
+        nome = f"Painel {len(self.orcamento.paineis)+1}"
+        novo = Painel(nome=nome, tipo="QDF")
+        self.orcamento.adicionar_painel(novo)
+        self.atualizar_lista()
+
+    def excluir_painel(self):
+        selecionado = self.lista_paineis.get()
+        self.orcamento.remover_painel(selecionado)
+        self.atualizar_lista()
+
+    def abrir_painel(self):
+        from ui.tela_componentes import TelaComponentes
+        nome = self.lista_paineis.get()
+        painel = next((p for p in self.orcamento.paineis if p.nome == nome), None)
+        if painel:
+            for widget in self.master.winfo_children():
+                widget.destroy()
+            TelaComponentes(self.master, painel, self.orcamento, self.caminho_arquivo).pack(fill="both", expand=True)
+
+    def salvar(self):
+        file_manager.salvar_orcamento(self.orcamento, self.caminho_arquivo)
+```
+
+---
+
+✅ **Capítulo 6 concluído.**
+
+Próximo: Capítulo 7 – Tela de Componentes (`tela_componentes.py`)

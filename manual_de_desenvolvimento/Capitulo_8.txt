@@ -1,0 +1,56 @@
+# 📘 Capítulo 8 – Menu Lateral Reutilizável (`ui/menu_lateral.py`)
+
+## 🎯 Objetivo
+Criar um componente reutilizável de menu lateral que possa ser importado pelas telas de Orçamentos, Painéis e Componentes, permitindo centralizar a aparência e os botões padrão.
+
+---
+
+## 🧩 Abordagem
+O menu lateral será um `CTkFrame` que recebe:
+- uma lista de botões com texto e função associada
+- um título opcional
+
+Isso permite reutilizar o mesmo menu com botões diferentes em cada tela.
+
+---
+
+## 📄 Estrutura da classe `MenuLateral`
+```python
+import customtkinter as ctk
+
+class MenuLateral(ctk.CTkFrame):
+    def __init__(self, master, titulo="Menu", acoes=[]):
+        super().__init__(master, width=200, corner_radius=0)
+        self.pack_propagate(False)
+
+        self.label = ctk.CTkLabel(self, text=titulo, font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        for texto, funcao in acoes:
+            botao = ctk.CTkButton(self, text=texto, command=funcao)
+            botao.pack(padx=10, pady=5, fill="x")
+```
+
+---
+
+## ✅ Exemplo de uso:
+Na `TelaPaineis`, podemos fazer:
+```python
+from ui.menu_lateral import MenuLateral
+
+acoes = [
+    ("Adicionar Painel", self.adicionar_painel),
+    ("Excluir Painel", self.excluir_painel),
+    ("Abrir Painel", self.abrir_painel),
+    ("Salvar", self.salvar)
+]
+
+menu = MenuLateral(self, titulo="Painéis", acoes=acoes)
+menu.pack(side="left", fill="y")
+```
+
+---
+
+✅ **Capítulo 8 concluído.**
+
+Próximo: Capítulo 9 – Regras de Cálculo de Componentes (`regras.json` + `regras_engine.py`)

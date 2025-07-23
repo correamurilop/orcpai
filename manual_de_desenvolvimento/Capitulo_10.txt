@@ -1,0 +1,54 @@
+# 📘 Capítulo 10 – Exportação para Excel (`core/exportador_excel.py`)
+
+## 🎯 Objetivo
+Gerar uma planilha `.xlsx` contendo todos os componentes de um orçamento, incluindo os derivados pelas regras, organizados por painel.
+
+---
+
+## 📦 Requisitos
+- Instalar o pacote `openpyxl`:
+```bash
+pip install openpyxl
+```
+
+---
+
+## 📄 Estrutura de `core/exportador_excel.py`
+```python
+from openpyxl import Workbook
+from core.regras_engine import aplicar_regras
+
+def exportar_orcamento_para_excel(orcamento, caminho_arquivo):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Orçamento"
+
+    ws.append(["Painel", "Componente", "Quantidade"])
+
+    for painel in orcamento.paineis:
+        for componente in painel.componentes:
+            # Componente direto
+            ws.append([painel.nome, componente.nome, componente.quantidade])
+
+            # Derivados por regra
+            derivados = aplicar_regras(componente)
+            for derivado in derivados:
+                ws.append([painel.nome, derivado.nome + " (gerado)", derivado.quantidade])
+
+    wb.save(caminho_arquivo)
+```
+
+---
+
+## ✅ Exemplo de uso
+```python
+from core.exportador_excel import exportar_orcamento_para_excel
+
+exportar_orcamento_para_excel(orcamento, "orcamento_gerado.xlsx")
+```
+
+---
+
+✅ **Capítulo 10 concluído.**
+
+Próximo: Capítulo 11 – Tela Admin Oculta (`tela_admin.py`)

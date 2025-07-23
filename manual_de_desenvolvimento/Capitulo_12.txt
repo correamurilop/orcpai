@@ -1,0 +1,61 @@
+# 📘 Capítulo 12 – Estética e Aparência (`assets/`, temas e ícones)
+
+## 🎯 Objetivo
+Organizar e aplicar uma identidade visual agradável ao sistema ORCPAI com:
+- Tema claro e escuro via `customtkinter`
+- Ícones padronizados para ações (adicionar, excluir, salvar, exportar)
+- Centralização de recursos visuais na pasta `assets/`
+
+---
+
+## 📂 Organização de `assets/`
+```
+assets/
+├── logo.png               # Logo da empresa ou do sistema
+├── icone_adicionar.png   # Ícone para botão adicionar
+├── icone_excluir.png     # Ícone para botão excluir
+├── icone_salvar.png      # Ícone para botão salvar
+├── icone_exportar.png    # Ícone para botão exportar
+└── tema/                 # Arquivos de tema (futuramente)
+```
+
+---
+
+## 🎨 Tema e Cores com `customtkinter`
+No `main.py`, definir o tema inicial:
+```python
+ctk.set_appearance_mode("light")  # ou "dark"
+ctk.set_default_color_theme("blue")
+```
+
+Para mudar para tema escuro:
+```python
+ctk.set_appearance_mode("dark")
+```
+
+---
+
+## 🧩 Como adicionar ícones nos botões (exemplo)
+```python
+from PIL import Image
+from customtkinter import CTkImage
+
+imagem_adicionar = CTkImage(light_image=Image.open("assets/icone_adicionar.png"), size=(20, 20))
+
+botao = ctk.CTkButton(self, text="Adicionar", image=imagem_adicionar, compound="left", command=self.funcao)
+botao.pack()
+```
+
+---
+
+## 💡 Dicas Visuais
+- Usar `padx=20` e `pady=10` para espaçamento harmonioso
+- Adotar fonte padrão `"Arial"` ou `"Roboto"` com tamanhos entre 12–16
+- Preferir layout em `pack()` com `fill="x"` ou `expand=True` nos frames principais
+- Pode-se futuramente incluir opção de alternar tema claro/escuro no Admin
+
+---
+
+✅ **Capítulo 12 concluído.**
+
+Este é o fim do primeiro volume do manual de desenvolvimento do sistema ORCPAI. O MVP está completamente especificado e pronto para implementação por qualquer IA programadora!

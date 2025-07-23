@@ -1,0 +1,68 @@
+# 📘 Capítulo 4 – Interface Principal (`main.py` e `ui/main_window.py`)
+
+## 🎯 Objetivo
+Criar a janela principal do sistema usando `customtkinter`, que será o ponto de entrada da aplicação e responsável por carregar as demais telas.
+
+---
+
+## 🗂 Arquivos envolvidos
+- `main.py`
+- `ui/main_window.py`
+
+---
+
+## 📄 Estrutura de `main.py`
+```python
+import customtkinter as ctk
+from ui.main_window import MainWindow
+
+if __name__ == '__main__':
+    ctk.set_appearance_mode("light")  # ou "dark"
+    ctk.set_default_color_theme("blue")
+
+    app = MainWindow()
+    app.mainloop()
+```
+
+---
+
+## 📄 Estrutura de `main_window.py`
+```python
+import customtkinter as ctk
+
+class MainWindow(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("ORCPAI – Orçamento de Painéis")
+        self.geometry("1000x600")
+
+        # Frame de menu lateral
+        self.menu_lateral = ctk.CTkFrame(self, width=200, corner_radius=0)
+        self.menu_lateral.pack(side="left", fill="y")
+
+        # Frame principal (área de troca de telas)
+        self.area_principal = ctk.CTkFrame(self)
+        self.area_principal.pack(side="right", fill="both", expand=True)
+
+        # Botão para abrir a tela de orçamentos
+        self.btn_orcamentos = ctk.CTkButton(self.menu_lateral, text="Orçamentos", command=self.abrir_tela_orcamentos)
+        self.btn_orcamentos.pack(padx=20, pady=10)
+
+        # Inicia com a tela de orçamentos carregada
+        self.abrir_tela_orcamentos()
+
+    def abrir_tela_orcamentos(self):
+        from ui.tela_orcamentos import TelaOrcamentos
+
+        for widget in self.area_principal.winfo_children():
+            widget.destroy()
+
+        tela = TelaOrcamentos(self.area_principal)
+        tela.pack(fill="both", expand=True)
+```
+
+---
+
+✅ **Capítulo 4 concluído.**
+
+Próximo: Capítulo 5 – Tela de Orçamentos (`tela_orcamentos.py`)

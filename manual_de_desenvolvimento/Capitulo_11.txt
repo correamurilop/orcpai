@@ -1,0 +1,65 @@
+# 📘 Capítulo 11 – Tela Admin Oculta (`ui/tela_admin.py`)
+
+## 🎯 Objetivo
+Implementar uma tela administrativa acessível via atalho secreto (ex: `Ctrl+Alt+A`), permitindo editar ou visualizar as regras de componentes armazenadas em `regras.json`.
+
+---
+
+## 📄 Estrutura da classe `TelaAdmin`
+```python
+import customtkinter as ctk
+import json
+from core.regras_engine import REGRAS_CAMINHO
+
+class TelaAdmin(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.label = ctk.CTkLabel(self, text="Administração de Regras", font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        self.textbox = ctk.CTkTextbox(self, width=800, height=400)
+        self.textbox.pack(padx=20, pady=10)
+
+        self.btn_salvar = ctk.CTkButton(self, text="Salvar Regras", command=self.salvar)
+        self.btn_salvar.pack(pady=5)
+
+        self.carregar_regras()
+
+    def carregar_regras(self):
+        with open(REGRAS_CAMINHO, 'r', encoding='utf-8') as f:
+            texto = f.read()
+        self.textbox.delete("1.0", "end")
+        self.textbox.insert("1.0", texto)
+
+    def salvar(self):
+        novo_texto = self.textbox.get("1.0", "end").strip()
+        try:
+            json.loads(novo_texto)  # valida JSON
+            with open(REGRAS_CAMINHO, 'w', encoding='utf-8') as f:
+                f.write(novo_texto)
+        except json.JSONDecodeError:
+            print("Erro: JSON inválido")
+```
+
+---
+
+## 🧩 Como chamar esta tela
+Na `MainWindow`, crie um binding para atalho secreto:
+```python
+self.bind_all("<Control-Alt-a>", self.abrir_admin)
+```
+E implemente:
+```python
+def abrir_admin(self, event=None):
+    from ui.tela_admin import TelaAdmin
+    for widget in self.area_principal.winfo_children():
+        widget.destroy()
+    TelaAdmin(self.area_principal).pack(fill="both", expand=True)
+```
+
+---
+
+✅ **Capítulo 11 concluído.**
+
+Próximo: Capítulo 12 – Estética e Aparência (`assets/`, temas e ícones)

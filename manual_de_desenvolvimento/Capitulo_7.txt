@@ -1,0 +1,81 @@
+# 📘 Capítulo 7 – Tela de Componentes (`ui/tela_componentes.py`)
+
+## 🎯 Objetivo
+Implementar a tela de edição dos componentes de um painel, permitindo:
+- Visualizar componentes existentes
+- Adicionar novo componente com quantidade
+- Remover componentes
+- Salvar alterações no painel (e no orçamento)
+
+---
+
+## 📄 Estrutura da classe `TelaComponentes`
+```python
+import customtkinter as ctk
+from core import file_manager
+from core.models import Componente
+
+class TelaComponentes(ctk.CTkFrame):
+    def __init__(self, master, painel, orcamento, caminho_arquivo):
+        super().__init__(master)
+        self.painel = painel
+        self.orcamento = orcamento
+        self.caminho_arquivo = caminho_arquivo
+
+        self.label = ctk.CTkLabel(self, text=f"Componentes de {painel.nome}", font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        # Entrada de quantidade e nome do componente
+        self.quantidade_entry = ctk.CTkEntry(self, placeholder_text="Quantidade")
+        self.quantidade_entry.pack(pady=5)
+
+        self.nome_entry = ctk.CTkEntry(self, placeholder_text="Nome do componente")
+        self.nome_entry.pack(pady=5)
+
+        self.btn_adicionar = ctk.CTkButton(self, text="Adicionar Componente", command=self.adicionar_componente)
+        self.btn_adicionar.pack(pady=5)
+
+        self.lista_componentes = ctk.CTkOptionMenu(self, values=self.get_lista_nomes())
+        self.lista_componentes.pack(pady=10)
+
+        self.btn_excluir = ctk.CTkButton(self, text="Excluir Componente", command=self.excluir_componente)
+        self.btn_excluir.pack(pady=5)
+
+        self.btn_salvar = ctk.CTkButton(self, text="Salvar Alterações", command=self.salvar)
+        self.btn_salvar.pack(pady=5)
+
+    def get_lista_nomes(self):
+        return [f"{c.quantidade}x {c.nome}" for c in self.painel.componentes]
+
+    def atualizar_lista(self):
+        self.lista_componentes.configure(values=self.get_lista_nomes())
+
+    def adicionar_componente(self):
+        nome = self.nome_entry.get()
+        try:
+            quantidade = int(self.quantidade_entry.get())
+        except ValueError:
+            return  # Ignora se não for número
+
+        if nome and quantidade > 0:
+            self.painel.adicionar_componente(Componente(nome=nome, quantidade=quantidade))
+            self.nome_entry.delete(0, "end")
+            self.quantidade_entry.delete(0, "end")
+            self.atualizar_lista()
+
+    def excluir_componente(self):
+        selecionado = self.lista_componentes.get()
+        if "x " in selecionado:
+            nome = selecionado.split("x ", 1)[1]
+            self.painel.remover_componente(nome)
+            self.atualizar_lista()
+
+    def salvar(self):
+        file_manager.salvar_orcamento(self.orcamento, self.caminho_arquivo)
+```
+
+---
+
+✅ **Capítulo 7 concluído.**
+
+Próximo: Capítulo 8 – Menu Lateral Reutilizável (`menu_lateral.py`)

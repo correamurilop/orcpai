@@ -1,0 +1,43 @@
+# 📘 Capítulo 0 – Escopo do Projeto e Visão Geral
+
+## 🔍 Nome do Projeto
+**ORCPAI – Orçamento de Painéis**
+
+## 🎯 Objetivo Geral
+Desenvolver um software desktop com interface gráfica que permita criar, editar e exportar orçamentos de painéis elétricos. O sistema deve gerar automaticamente a lista de componentes e itens auxiliares com base em regras predefinidas, e exportar os resultados para uma planilha Excel.
+
+O nome ORCPAI vem da sigla de "Orçamento de Painéis", mas também é uma brincadeira com "orc pai", dado o contexto de RPG do desenvolvedor. 🧙‍♂️🛠️
+
+## 👥 Público-Alvo
+- Uso interno em empresas de engenharia elétrica.
+- Orçamentistas que precisam gerar rapidamente listas de componentes de painéis para posterior orçamento em outro sistema comercial.
+
+## 📦 Principais Funcionalidades
+- Gerenciamento de múltiplos orçamentos, salvos em arquivos `.orcpai` (JSON com extensão personalizada).
+- Cada orçamento pode conter múltiplos painéis.
+- Cada painel contém componentes com nome e quantidade.
+- Regras configuráveis determinam componentes auxiliares gerados automaticamente (como parafusos, trilhos, etc.).
+- Exportação do orçamento completo em formato `.xlsx`.
+- Tela administrativa oculta para edição das regras do sistema.
+
+## 🖥️ Características Técnicas
+- Desenvolvido em Python 3 com `customtkinter` para interface gráfica.
+- Estrutura modular separando lógica, interface, dados e assets.
+- Armazenamento de dados local via arquivos `.orcpai` e `regras.json`.
+- Sem necessidade de banco de dados ou autenticação de usuário.
+- Interface moderna e responsiva com tema claro/escuro.
+
+## 🔐 Segurança e Restrições
+- Acesso à tela de administração via atalho de teclado (`Ctrl + Alt + A`).
+- Sem controle de usuários, senhas ou permissões (uso interno apenas).
+- Sem conexão com sistemas externos de orçamento (a exportação é manual).
+
+## 🗺️ Visão Geral do Fluxo
+```
+[Tela Principal]
+   → [Tela de Orçamentos]
+       → [Tela de Painéis]
+           → [Tela de Componentes]
+
+[Tela Admin (oculta)] → edição de regras
+```

@@ -1,0 +1,70 @@
+# 📘 Capítulo 9 – Regras de Cálculo de Componentes (`data/regras.json` + `core/regras_engine.py`)
+
+## 🎯 Objetivo
+Permitir que o sistema calcule automaticamente componentes derivados com base em regras definidas no arquivo `regras.json`. Essas regras são interpretadas pela função do módulo `regras_engine.py`.
+
+---
+
+## 🗃️ Exemplo de `data/regras.json`
+```json
+[
+  {
+    "entrada": {
+      "nome": "Disjuntor Trifásico 32A"
+    },
+    "saida": [
+      {"nome": "Parafuso Tipo X", "quantidade": 2},
+      {"nome": "Trilho DIN 12cm", "quantidade": 1}
+    ]
+  },
+  {
+    "entrada": {
+      "nome": "Disjuntor Monofásico 16A"
+    },
+    "saida": [
+      {"nome": "Parafuso Tipo X", "quantidade": 1}
+    ]
+  }
+]
+```
+
+---
+
+## 📄 Estrutura de `core/regras_engine.py`
+```python
+import json
+from core.models import Componente
+
+REGRAS_CAMINHO = "data/regras.json"
+
+def carregar_regras():
+    with open(REGRAS_CAMINHO, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def aplicar_regras(componente: Componente):
+    regras = carregar_regras()
+    derivados = []
+    for regra in regras:
+        if regra['entrada']['nome'].lower() == componente.nome.lower():
+            for item in regra['saida']:
+                derivados.append(Componente(nome=item['nome'], quantidade=item['quantidade'] * componente.quantidade))
+    return derivados
+```
+
+---
+
+## ✅ Exemplo de uso
+```python
+from core.regras_engine import aplicar_regras
+
+c = Componente("Disjuntor Trifásico 32A", 2)
+derivados = aplicar_regras(c)
+for item in derivados:
+    print(f"{item.quantidade}x {item.nome}")
+```
+
+---
+
+✅ **Capítulo 9 concluído.**
+
+Próximo: Capítulo 10 – Exportação para Excel (`exportador_excel.py`)

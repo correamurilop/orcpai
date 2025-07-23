@@ -1,0 +1,45 @@
+# 📘 Capítulo 3 – Persistência de Arquivos (core/file_manager.py)
+
+## 🎯 Objetivo
+Criar funções responsáveis por salvar e carregar orçamentos em arquivos `.orcpai` (formato JSON), além de listar arquivos disponíveis na pasta `orcamentos/`.
+
+---
+
+## 📄 Funções a implementar
+
+### 🔸 `salvar_orcamento(orcamento: Orcamento, caminho: str)`
+Salva o objeto `Orcamento` em um arquivo `.orcpai` no caminho especificado.
+```python
+import json
+
+def salvar_orcamento(orcamento, caminho):
+    with open(caminho, 'w', encoding='utf-8') as f:
+        json.dump(orcamento.to_dict(), f, ensure_ascii=False, indent=4)
+```
+
+### 🔸 `carregar_orcamento(caminho: str) -> Orcamento`
+Carrega um arquivo `.orcpai` e retorna um objeto `Orcamento`.
+```python
+import json
+from core.models import Orcamento
+
+def carregar_orcamento(caminho):
+    with open(caminho, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return Orcamento.from_dict(data)
+```
+
+### 🔸 `listar_arquivos_orcamentos(diretorio='orcamentos/') -> list[str]`
+Retorna uma lista com os caminhos dos arquivos `.orcpai` na pasta informada.
+```python
+import os
+
+def listar_arquivos_orcamentos(diretorio='orcamentos/'):
+    return [os.path.join(diretorio, f) for f in os.listdir(diretorio) if f.endswith('.orcpai')]
+```
+
+---
+
+✅ **Capítulo 3 concluído.**
+
+Próximo: Capítulo 4 – Interface Principal (main.py e main_window.py)
