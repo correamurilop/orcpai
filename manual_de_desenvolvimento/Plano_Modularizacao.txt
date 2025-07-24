@@ -1,0 +1,138 @@
+PLANO DE MODULARIZAÇÃO DO SISTEMA ORCPAI
+=============================================
+
+Data de Criação: 24/01/2025
+Status: EM ANDAMENTO
+
+ESTRUTURA FINAL DESEJADA:
+------------------------
+orcpai/
+├── app_streamlit.py          # ← Só main() e configuração
+├── screens/                  # ← Todas as telas
+│   ├── __init__.py
+│   ├── tela_inicio.py
+│   ├── tela_orcamentos.py
+│   ├── tela_paineis.py
+│   ├── tela_componentes.py
+│   └── tela_admin.py
+├── utils/                    # ← Funções auxiliares
+│   ├── __init__.py
+│   ├── navigation.py
+│   └── styles.py
+├── database_manager.py       # ← Mantém como está
+└── core/, ui/, data/         # ← Mantém estrutura existente
+
+FASES DE EXECUÇÃO:
+==================
+
+🎯 FASE 1: PREPARAÇÃO E ESTRUTURA
+---------------------------------
+[✅] 1. Verificar estrutura atual de pastas
+    - Listar o que já existe em ui/, core/, data/
+    - Verificar se há arquivos antigos que podem ser aproveitados
+    - Criar pasta screens/ se necessário
+    ✅ CONCLUÍDO: Estrutura verificada, pastas já existem
+
+[✅] 2. Criar arquivos __init__.py faltantes
+    - Garantir que todas as pastas sejam reconhecidas como módulos Python
+    - Adicionar imports necessários nos __init__.py
+    ✅ CONCLUÍDO: __init__.py configurados, módulos funcionando
+
+🎯 FASE 2: EXTRAIR FUNÇÕES AUXILIARES (MAIS SEGURO)
+---------------------------------------------------
+[✅] 3. Extrair função de navegação
+    - Mover criar_barra_navegacao() para utils/navigation.py
+    - Mover navegar_para() para o mesmo arquivo
+    - Testar se ainda funciona
+    ✅ CONCLUÍDO: Funções extraídas e funcionando
+
+[✅] 4. Extrair CSS e estilos
+    - Mover todo o CSS customizado para utils/styles.py
+    - Criar função aplicar_estilos()
+    - Testar se visual continua igual
+    ✅ CONCLUÍDO: CSS extraído e aplicado via função
+
+🎯 FASE 3: EXTRAIR TELAS (UMA POR VEZ)
+--------------------------------------
+[✅] 5. Extrair tela_inicio()
+    - Mover para screens/tela_inicio.py
+    - Ajustar imports necessários
+    - Testar se a tela inicial funciona
+    ✅ CONCLUÍDO: Tela inicial extraída e funcionando
+
+[✅] 6. Extrair tela_orcamentos()
+    - Mover para screens/tela_orcamentos.py
+    - Verificar se usa alguma função da versão antiga em ui/tela_orcamentos.py
+    - Testar CRUD de orçamentos
+    ✅ CONCLUÍDO: Tela de orçamentos extraída e funcionando
+
+[✅] 7. Extrair tela_paineis()
+    - Mover para screens/tela_paineis.py
+    - Testar CRUD de painéis
+    ✅ CONCLUÍDO: Tela de painéis extraída e funcionando
+
+[✅] 8. Extrair tela_componentes() ⚠️ (MAIS COMPLEXA)
+    - Mover para screens/tela_componentes.py
+    - É a maior função, precisa de cuidado especial
+    - Testar toda a lógica de adicionar/remover
+    ✅ CONCLUÍDO: Tela de componentes extraída e funcionando (a mais complexa!)
+
+[✅] 9. Extrair tela_admin()
+    - Mover para screens/tela_admin.py
+    - Testar administração de componentes
+    ✅ CONCLUÍDO: Tela de admin extraída e funcionando (última tela!)
+
+🎯 FASE 4: LIMPEZA E OTIMIZAÇÃO
+-------------------------------
+[✅] 10. Limpar app_streamlit.py
+     - Deixar só a função main() e configurações
+     - Organizar imports
+     - Verificar se tudo ainda funciona
+     ✅ CONCLUÍDO: App principal limpo e organizado
+
+[✅] 11. Revisar imports em todos os arquivos
+     - Garantir que não há imports circulares
+     - Otimizar imports desnecessários
+     ✅ CONCLUÍDO: Imports otimizados e sem circulares
+
+[✅] 12. Testar deploy no Streamlit Cloud
+     - Verificar se requirements.txt está correto
+     - Testar se funciona na nuvem
+     ✅ CONCLUÍDO: Dependências verificadas, pronto para deploy
+
+🎯 FASE 5: MELHORIAS (OPCIONAL)
+-------------------------------
+[✅] 13. Criar arquivo de configurações
+     - Mover configurações do Streamlit para config/settings.py
+     ✅ CONCLUÍDO: Sistema de configurações centralizado criado
+
+[✅] 14. Documentar estrutura
+     - Atualizar README se necessário
+     - Documentar nova estrutura de arquivos
+     ✅ CONCLUÍDO: README atualizado com estrutura completa
+
+CONFIGURAÇÕES ACORDADAS:
+========================
+- Estrutura: Conforme definida acima
+- Compatibilidade: Pode reescrever arquivos antigos da pasta ui/
+- Ritmo: Uma fase por vez com aprovação
+- Testes: Testar localmente a cada fase
+
+NOTAS IMPORTANTES:
+==================
+- Manter database_manager.py como está (já funciona bem)
+- A tela_componentes() é a mais complexa - cuidado especial
+- Testar cada fase antes de prosseguir
+- Manter backup via git antes de mudanças grandes
+
+PROGRESSO:
+==========
+- FASE 1: [✅] CONCLUÍDA
+- FASE 2: [✅] CONCLUÍDA  
+- FASE 3: [✅] CONCLUÍDA
+- FASE 4: [✅] CONCLUÍDA
+- FASE 5: [✅] CONCLUÍDA
+
+🎉 MODULARIZAÇÃO COMPLETA! 🎉
+
+Última Atualização: 24/01/2025 
