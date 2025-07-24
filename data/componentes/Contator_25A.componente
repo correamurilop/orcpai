@@ -1,0 +1,15 @@
+{
+  "nome": "Contator 25A",
+  "categoria": "Contatores",
+  "descricao": "Contator tripolar 25A para comando de motores",
+  "regras_derivadas": [
+    {
+      "nome": "Parafuso M5x25",
+      "quantidade": 4
+    },
+    {
+      "nome": "Trilho DIN 35mm",
+      "quantidade": 2
+    }
+  ]
+}

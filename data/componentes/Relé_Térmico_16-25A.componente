@@ -1,0 +1,11 @@
+{
+  "nome": "Relé Térmico 16-25A",
+  "categoria": "Proteção",
+  "descricao": "Relé térmico ajustável para proteção de sobrecarga",
+  "regras_derivadas": [
+    {
+      "nome": "Parafuso M4x20",
+      "quantidade": 2
+    }
+  ]
+}

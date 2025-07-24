@@ -1,0 +1,28 @@
+[
+  {
+    "entrada": {
+      "nome": "Disjuntor Trifásico 32A"
+    },
+    "saida": [
+      {"nome": "Parafuso Tipo X", "quantidade": 2},
+      {"nome": "Trilho DIN 12cm", "quantidade": 1}
+    ]
+  },
+  {
+    "entrada": {
+      "nome": "Disjuntor Monofásico 16A"
+    },
+    "saida": [
+      {"nome": "Parafuso Tipo X", "quantidade": 1}
+    ]
+  },
+  {
+    "entrada": {
+      "nome": "Contator"
+    },
+    "saida": [
+      {"nome": "Parafuso M4", "quantidade": 4},
+      {"nome": "Trilho DIN 8cm", "quantidade": 1}
+    ]
+  }
+] 

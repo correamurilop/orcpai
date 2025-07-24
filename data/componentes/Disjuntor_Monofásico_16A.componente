@@ -1,0 +1,15 @@
+{
+  "nome": "Disjuntor Monofásico 16A",
+  "categoria": "Disjuntores",
+  "descricao": "Disjuntor unipolar 16A para proteção de circuitos monofásicos",
+  "regras_derivadas": [
+    {
+      "nome": "Parafuso M4x16",
+      "quantidade": 1
+    },
+    {
+      "nome": "Trilho DIN 35mm",
+      "quantidade": 1
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "nome": "Disjuntor Trifásico 32A",
+  "categoria": "Disjuntores",
+  "descricao": "Disjuntor tripolar 32A para proteção de circuitos trifásicos",
+  "regras_derivadas": [
+    {
+      "nome": "Parafuso M4x20",
+      "quantidade": 2
+    },
+    {
+      "nome": "Trilho DIN 35mm",
+      "quantidade": 1
+    }
+  ]
+}

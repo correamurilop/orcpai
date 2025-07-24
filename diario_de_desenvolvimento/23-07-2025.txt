@@ -1,0 +1,436 @@
+================================================================================
+                    DIÁRIO DE DESENVOLVIMENTO - ORCPAI
+                        Data: 23/07/2025
+================================================================================
+
+PROJETO: ORCPAI – Orçamento de Painéis Elétricos
+LINGUAGEM: Python 3 + CustomTkinter
+OBJETIVO: Sistema desktop para criação, gestão e exportação de orçamentos de painéis elétricos
+
+================================================================================
+                            RESUMO DO DIA
+================================================================================
+
+Hoje foi um dia de grandes melhorias na interface e experiência do usuário. 
+Focamos em:
+1. Melhorar a interface visual das listas
+2. Implementar sistema de busca e filtros
+3. Adicionar funcionalidade de renomear
+4. Configurar janela sempre maximizada
+5. Implementar sistema de componentes pré-cadastrados
+6. Remover tooltips problemáticos
+
+ESTADO ATUAL: Sistema funcional com interface moderna. Próximo passo é cadastrar 
+componentes reais e testar o fluxo básico completo.
+
+================================================================================
+                        FUNCIONALIDADES IMPLEMENTADAS
+================================================================================
+
+1. MELHORIA DA INTERFACE DE LISTAS
+   ────────────────────────────────────────────────────────────────────────────
+   
+   PROBLEMA INICIAL: 
+   - Listas eram dropdowns simples
+   - Difícil visualização de múltiplos itens
+   - Sem funcionalidade de busca
+   
+   SOLUÇÃO IMPLEMENTADA:
+   - Substituição de CTkOptionMenu por CTkScrollableFrame
+   - Lista visual com itens individuais
+   - Cada item mostra informações relevantes
+   - Seleção visual com destaque
+   
+   ARQUIVOS MODIFICADOS:
+   - ui/tela_orcamentos.py
+   - ui/tela_paineis.py
+   
+   RESULTADO:
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 📋 Nome do Orçamento (2024-01-15)        [📂][✏️][🗑️]      │
+   │ 📋 Outro Orçamento (2024-01-14)          [📂][✏️][🗑️]      │
+   └─────────────────────────────────────────────────────────────┘
+
+2. SISTEMA DE BUSCA E FILTROS
+   ────────────────────────────────────────────────────────────────────────────
+   
+   FUNCIONALIDADE:
+   - Campo de busca em tempo real
+   - Filtro por nome de orçamento/painel
+   - Botão "Limpar" para resetar busca
+   - Atualização automática da lista
+   
+   IMPLEMENTAÇÃO:
+   - Entry widget com bind "<KeyRelease>"
+   - Função filtrar_orcamentos() / filtrar_paineis()
+   - Busca case-insensitive
+   - Feedback visual quando não há resultados
+   
+   INTERFACE:
+   🔍 Buscar: [texto_____] [✖️ Limpar]
+
+3. FUNCIONALIDADE DE RENOMEAR
+   ────────────────────────────────────────────────────────────────────────────
+   
+   REQUISITO: Renomear orçamentos e painéis facilmente
+   
+   IMPLEMENTAÇÃO:
+   - Botões inline ✏️ em cada item da lista
+   - Dialog CTkInputDialog para novo nome
+   - Validação de nomes duplicados (painéis)
+   - Salvamento automático após renomeação
+   
+   LOCALIZAÇÃO DOS BOTÕES:
+   - Diretamente na linha de cada item
+   - Entre botão "Abrir" (📂) e "Excluir" (🗑️)
+   - Cor laranja para destaque visual
+   
+   FUNÇÕES CRIADAS:
+   - renomear_orcamento_por_nome()
+   - renomear_painel_por_nome()
+   
+   VALIDAÇÕES:
+   - Verificação se nome foi alterado
+   - Prevenção de nomes duplicados
+   - Tratamento de erros de arquivo
+
+4. DUPLO CLIQUE PARA ABRIR
+   ────────────────────────────────────────────────────────────────────────────
+   
+   PROBLEMA: CustomTkinter não suporta Double-Button-1 confiável
+   
+   SOLUÇÃO CUSTOMIZADA:
+   - Sistema de contagem de cliques
+   - Threading.Timer para detecção temporal
+   - 300ms de janela para duplo clique
+   
+   IMPLEMENTAÇÃO:
+   ```python
+   btn_nome._click_count = 0
+   btn_nome._timer = None
+   
+   def handle_click():
+       btn_nome._click_count += 1
+       if btn_nome._timer:
+           btn_nome._timer.cancel()
+       
+       def process_click():
+           if btn_nome._click_count == 1:
+               selecionar_item()
+           elif btn_nome._click_count >= 2:
+               abrir_item()
+           btn_nome._click_count = 0
+       
+       btn_nome._timer = threading.Timer(0.3, process_click)
+       btn_nome._timer.start()
+   ```
+
+5. BREADCRUMB DE NAVEGAÇÃO
+   ────────────────────────────────────────────────────────────────────────────
+   
+   REQUISITO: Mostrar localização atual no menu lateral
+   
+   IMPLEMENTAÇÃO:
+   - Frame dinâmico no menu lateral
+   - Botões clicáveis para navegação
+   - Aparece/desaparece conforme necessário
+   
+   ESTRUTURA:
+   ┌─────────────────────┐
+   │       ORCPAI        │
+   ├─────────────────────┤
+   │   📋 Orçamentos     │
+   ├─────────────────────┤
+   │ 📋 Nome do Orçamento│  ← Clicável
+   │ ⚡ Nome do Painel   │  ← Atual
+   └─────────────────────┘
+   
+   MÉTODOS CRIADOS:
+   - adicionar_breadcrumb()
+   - limpar_breadcrumb()
+   - atualizar_breadcrumb_painel()
+
+6. JANELA SEMPRE MAXIMIZADA
+   ────────────────────────────────────────────────────────────────────────────
+   
+   REQUISITO: Interface profissional sempre em tela cheia
+   
+   CONFIGURAÇÕES:
+   - self.state('zoomed') - Maximizar no Windows
+   - self.resizable(False, False) - Desabilitar redimensionamento
+   - Interceptação de eventos Configure
+   - Forçar volta para maximizado se alterado
+   
+   IMPLEMENTAÇÃO:
+   ```python
+   def on_configure(self, event):
+       if event.widget == self:
+           if self.state() != 'zoomed':
+               self.state('zoomed')
+   ```
+
+7. SISTEMA DE COMPONENTES PRÉ-CADASTRADOS
+   ────────────────────────────────────────────────────────────────────────────
+   
+   ARQUITETURA:
+   - Arquivo individual .componente para cada componente
+   - Classe ComponenteInfo para estrutura de dados
+   - Manager dedicado (componentes_manager.py)
+   
+   ESTRUTURA DE DADOS:
+   ```python
+   class ComponenteInfo:
+       def __init__(self, nome, descricao="", regras_derivadas=None):
+           self.nome = nome
+           self.descricao = descricao
+           self.regras_derivadas = regras_derivadas or []
+   ```
+   
+   FUNCIONALIDADES:
+   - Salvar/carregar componentes individuais
+   - Busca por nome
+   - Listagem completa
+   - Criação de componentes exemplo
+   - Sanitização de nomes para arquivos
+   
+   INTEGRAÇÃO NA UI:
+   - Busca em tempo real na tela de componentes
+   - Lista expansível/recolhível
+   - Botão "Adicionar" para cada componente
+   - Dialog para quantidade ao adicionar
+
+8. TELA ADMINISTRATIVA REFORMULADA
+   ────────────────────────────────────────────────────────────────────────────
+   
+   ANTES: Editor JSON manual das regras
+   DEPOIS: Interface visual moderna para componentes
+   
+   NOVA INTERFACE:
+   - Lista visual de componentes cadastrados
+   - Busca por nome
+   - Botões inline para ações
+   - Dialog completo para criar/editar
+   
+   FUNCIONALIDADES:
+   - Criar novo componente
+   - Editar componente existente
+   - Definir regras derivadas
+   - Excluir componentes
+   - Validação de dados
+
+9. REMOÇÃO DE CATEGORIAS
+   ────────────────────────────────────────────────────────────────────────────
+   
+   DECISÃO: Simplificar interface removendo sistema de categorias
+   
+   MODIFICAÇÕES:
+   - Removido campo categoria de ComponenteInfo
+   - Removido dropdown de categoria nas telas
+   - Removidas funções de filtro por categoria
+   - Simplificada busca para apenas por nome
+   
+   RESULTADO: Interface mais limpa e direta
+
+10. REMOÇÃO DE ADIÇÃO MANUAL DE COMPONENTES
+    ───────────────────────────────────────────────────────────────────────────
+    
+    DECISÃO: Todos componentes devem ser pré-cadastrados
+    
+    REMOVIDO:
+    - Campos de entrada manual (nome e quantidade)
+    - Botão "Adicionar Manual"
+    - Seção "OU ADICIONAR MANUALMENTE"
+    - Função adicionar_componente() manual
+    
+    MANTIDO:
+    - Lista sempre visível de componentes cadastrados
+    - Dialog para quantidade ao selecionar componente
+    - Controle total sobre componentes disponíveis
+
+11. REMOÇÃO COMPLETA DE TOOLTIPS
+    ───────────────────────────────────────────────────────────────────────────
+    
+    PROBLEMA: Tooltips ficavam travados na tela
+    
+    REMOVIDO DE TODAS AS TELAS:
+    - Função criar_tooltip()
+    - Função criar_tooltip_componente()
+    - Todas as chamadas para tooltips
+    - Binds de eventos Enter/Leave
+    
+    RESULTADO: Interface mais limpa sem sobreposições
+
+================================================================================
+                            ARQUIVOS MODIFICADOS
+================================================================================
+
+ARQUIVOS PRINCIPAIS:
+├── main.py (configuração inicial)
+├── requirements.txt (dependências)
+├── README.md (documentação)
+│
+├── core/
+│   ├── __init__.py
+│   ├── models.py (classes Orcamento, Painel, Componente)
+│   ├── file_manager.py (gerenciamento de arquivos .orcpai)
+│   ├── regras_engine.py (aplicação de regras)
+│   ├── exportador_excel.py (exportação para Excel)
+│   └── componentes_manager.py (NOVO - gestão de componentes)
+│
+├── ui/
+│   ├── __init__.py
+│   ├── main_window.py (janela principal + breadcrumb)
+│   ├── tela_orcamentos.py (lista visual + busca + renomear)
+│   ├── tela_paineis.py (lista visual + busca + renomear)
+│   ├── tela_componentes.py (busca componentes + sem manual)
+│   └── tela_admin.py (interface visual para componentes)
+│
+├── data/
+│   ├── regras.json (regras de componentes)
+│   └── componentes/ (NOVO - arquivos .componente individuais)
+│
+└── orcamentos/ (arquivos .orcpai dos usuários)
+
+================================================================================
+                              MELHORIAS TÉCNICAS
+================================================================================
+
+1. PERSISTÊNCIA DE DADOS:
+   - Salvamento automático após modificações
+   - Arquivos .componente individuais
+   - Validação de JSON
+   - Tratamento de erros de arquivo
+
+2. EXPERIÊNCIA DO USUÁRIO:
+   - Interface consistente entre telas
+   - Feedback visual imediato
+   - Ações diretas (botões inline)
+   - Navegação intuitiva com breadcrumb
+
+3. ROBUSTEZ:
+   - Validação de nomes duplicados
+   - Tratamento de exceções
+   - Estados de erro bem definidos
+   - Recuperação automática de problemas
+
+4. PERFORMANCE:
+   - Busca otimizada em tempo real
+   - Carregamento sob demanda
+   - Remoção de elementos desnecessários
+   - Interface responsiva
+
+================================================================================
+                            TESTES REALIZADOS
+================================================================================
+
+✅ FUNCIONALIDADES TESTADAS:
+- Criação de orçamentos
+- Adição de painéis (QDF/QDL com subtipos)
+- Busca em listas de orçamentos e painéis
+- Renomeação inline de orçamentos e painéis
+- Duplo clique para abrir itens
+- Navegação com breadcrumb
+- Interface sempre maximizada
+- Sistema de componentes pré-cadastrados
+- Tela administrativa de componentes
+
+✅ CORREÇÕES REALIZADAS:
+- Erro de referência em botões (problema de .pack() inline)
+- Erro de categoria não existente após remoção
+- Problema de tooltip travado
+- Duplo clique não funcionando no CustomTkinter
+- Nomes de orçamento mostrando timestamp
+
+================================================================================
+                              PRÓXIMOS PASSOS
+================================================================================
+
+PAREI EM: Começar a cadastrar os componentes reais e testar o básico
+
+PRÓXIMAS ATIVIDADES SUGERIDAS:
+
+1. CADASTRAR COMPONENTES REAIS:
+   - Disjuntores (várias amperagens)
+   - Contatores (várias capacidades)
+   - Relés térmicos
+   - Componentes auxiliares (parafusos, trilhos, etc.)
+   - Definir regras derivadas para cada um
+
+2. TESTAR FLUXO BÁSICO COMPLETO:
+   - Criar orçamento novo
+   - Adicionar painéis
+   - Adicionar componentes aos painéis
+   - Verificar aplicação de regras automáticas
+   - Testar exportação para Excel
+   - Validar cálculos e quantidades
+
+3. MELHORIAS FUTURAS IDENTIFICADAS:
+   - Sistema de backup automático
+   - Histórico de modificações
+   - Templates de painéis comuns
+   - Relatórios customizados
+   - Integração com fornecedores
+
+4. TESTES DE VALIDAÇÃO:
+   - Teste com orçamentos grandes (100+ componentes)
+   - Teste de performance com muitos orçamentos
+   - Teste de recuperação de arquivos corrompidos
+   - Validação de regras complexas
+
+================================================================================
+                               OBSERVAÇÕES
+================================================================================
+
+1. DECISÕES DE DESIGN:
+   - Priorizada simplicidade sobre funcionalidades complexas
+   - Interface limpa sem elementos desnecessários
+   - Ações diretas em vez de múltiplos cliques
+   - Feedback visual imediato ao usuário
+
+2. ARQUITETURA:
+   - Separação clara entre UI e lógica de negócio
+   - Modularidade permite extensões futuras
+   - Persistência robusta com validação
+   - Sistema de componentes extensível
+
+3. EXPERIÊNCIA DO USUÁRIO:
+   - Fluxo intuitivo de trabalho
+   - Minimização de passos para tarefas comuns
+   - Interface profissional sempre maximizada
+   - Navegação clara com breadcrumb
+
+================================================================================
+                            ESTATÍSTICAS DO DIA
+================================================================================
+
+LINHAS DE CÓDIGO MODIFICADAS: ~500+ linhas
+ARQUIVOS ALTERADOS: 8 arquivos principais
+FUNCIONALIDADES IMPLEMENTADAS: 11 grandes melhorias
+BUGS CORRIGIDOS: 5 problemas identificados e resolvidos
+TEMPO ESTIMADO DE DESENVOLVIMENTO: 6-8 horas
+
+FUNCIONALIDADES REMOVIDAS: 3 (categorias, adição manual, tooltips)
+FUNCIONALIDADES ADICIONADAS: 8 (listas visuais, busca, renomear, etc.)
+MELHORIAS DE UX: 6 (breadcrumb, maximização, duplo clique, etc.)
+
+================================================================================
+                                 CONCLUSÃO
+================================================================================
+
+Dia muito produtivo com grandes avanços na qualidade da interface e experiência 
+do usuário. O sistema evoluiu de uma interface básica funcional para uma 
+aplicação profissional com recursos modernos.
+
+As principais conquistas foram:
+- Interface visual muito mais atrativa e funcional
+- Fluxo de trabalho otimizado para o usuário final
+- Sistema robusto de componentes pré-cadastrados
+- Fundação sólida para expansões futuras
+
+O sistema está pronto para a próxima fase: cadastro de componentes reais e 
+testes práticos com casos de uso do mundo real.
+
+PRÓXIMA SESSÃO: Focar no cadastro de componentes elétricos reais e validação 
+do fluxo completo de criação de orçamentos.
+
+================================================================================ 

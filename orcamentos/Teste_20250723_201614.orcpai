@@ -1,0 +1,16 @@
+{
+    "nome": "Orcamento Teste",
+    "data": "2025-07-23",
+    "paineis": [
+        {
+            "nome": "Painel Teste",
+            "tipo": "QDF/QDL",
+            "componentes": [
+                {
+                    "nome": "disjuntores",
+                    "quantidade": 5
+                }
+            ]
+        }
+    ]
+}
