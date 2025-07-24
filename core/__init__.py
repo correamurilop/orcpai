@@ -1,1 +1,1 @@
-# Core Package 
+# Pacote core do ORCPAI 

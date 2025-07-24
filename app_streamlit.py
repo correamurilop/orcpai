@@ -1,15 +1,32 @@
 import streamlit as st
 import os
+import sys
 import json
 from datetime import datetime
 import pandas as pd
 from io import BytesIO
 
+# Adicionar o diretório atual ao path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Garantir que os diretórios necessários existam
+os.makedirs('orcamentos', exist_ok=True)
+os.makedirs('data/componentes', exist_ok=True)
+
 # Importar módulos existentes
-from core.models import Orcamento, Painel, Componente
-from core.file_manager import salvar_orcamento, carregar_orcamento, listar_orcamentos, excluir_orcamento
-from core.componentes_manager import listar_componentes_cadastrados, carregar_componente_info, buscar_componentes
-from core.exportador_excel import exportar_orcamento_para_excel
+try:
+    from core.models import Orcamento, Painel, Componente
+    from core.file_manager import salvar_orcamento, carregar_orcamento, listar_orcamentos, excluir_orcamento
+    from core.componentes_manager import listar_componentes_cadastrados, carregar_componente_info, buscar_componentes, inicializar_componentes
+    from core.exportador_excel import exportar_orcamento_para_excel
+    
+    # Inicializar componentes exemplo se não existirem
+    if not listar_componentes_cadastrados():
+        inicializar_componentes()
+        
+except ImportError as e:
+    st.error(f"Erro ao importar módulos: {e}")
+    st.stop()
 
 # Configuração da página
 st.set_page_config(
