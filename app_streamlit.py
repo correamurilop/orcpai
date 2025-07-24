@@ -1,31 +1,18 @@
 import streamlit as st
-import os
-import sys
-import json
 from datetime import datetime
 import pandas as pd
 from io import BytesIO
 
-# Adicionar o diretório atual ao path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-# Garantir que os diretórios necessários existam
-os.makedirs('orcamentos', exist_ok=True)
-os.makedirs('data/componentes', exist_ok=True)
-
-# Importar módulos existentes
+# Importar database manager
 try:
-    from core.models import Orcamento, Painel, Componente
-    from core.file_manager import salvar_orcamento, carregar_orcamento, listar_orcamentos, excluir_orcamento
-    from core.componentes_manager import listar_componentes_cadastrados, carregar_componente_info, buscar_componentes, inicializar_componentes
-    from core.exportador_excel import exportar_orcamento_para_excel
-    
-    # Inicializar componentes exemplo se não existirem
-    if not listar_componentes_cadastrados():
-        inicializar_componentes()
-        
+    from database_manager import db
 except ImportError as e:
-    st.error(f"Erro ao importar módulos: {e}")
+    st.error(f"Erro ao importar database manager: {e}")
+    st.stop()
+
+# Verificar conexão com banco
+if not db.is_connected():
+    st.error("❌ Não foi possível conectar ao banco de dados")
     st.stop()
 
 # Configuração da página
@@ -109,8 +96,8 @@ def tela_inicio():
         st.subheader("📊 Resumo do Sistema")
         
         try:
-            orcamentos = listar_orcamentos()
-            componentes = listar_componentes_cadastrados()
+            orcamentos = db.listar_orcamentos()
+            componentes = db.listar_componentes_cadastrados()
             
             col_stats1, col_stats2 = st.columns(2)
             with col_stats1:
@@ -141,13 +128,12 @@ def tela_orcamentos():
     with col2:
         if st.button("Criar", use_container_width=True, type="primary"):
             if nome_novo.strip():
-                try:
-                    novo_orcamento = Orcamento(nome_novo.strip())
-                    salvar_orcamento(novo_orcamento)
+                resultado = db.criar_orcamento(nome_novo.strip())
+                if resultado:
                     st.success(f"✅ Orçamento '{nome_novo}' criado com sucesso!")
                     st.rerun()
-                except Exception as e:
-                    st.error(f"❌ Erro ao criar orçamento: {str(e)}")
+                else:
+                    st.error("❌ Erro ao criar orçamento")
             else:
                 st.warning("⚠️ Digite um nome para o orçamento")
     
@@ -156,74 +142,51 @@ def tela_orcamentos():
     # Lista de orçamentos
     st.subheader("📄 Orçamentos Existentes")
     
-    try:
-        orcamentos = listar_orcamentos()
+    orcamentos = db.listar_orcamentos()
+    
+    if not orcamentos:
+        st.info("📝 Nenhum orçamento encontrado. Crie seu primeiro orçamento acima!")
+    else:
+        # Busca
+        busca = st.text_input("🔍 Buscar orçamento", placeholder="Digite para filtrar...")
         
-        if not orcamentos:
-            st.info("📝 Nenhum orçamento encontrado. Crie seu primeiro orçamento acima!")
+        # Filtrar orçamentos
+        if busca:
+            orcamentos_filtrados = [orc for orc in orcamentos if busca.lower() in orc['nome'].lower()]
         else:
-            # Busca
-            busca = st.text_input("🔍 Buscar orçamento", placeholder="Digite para filtrar...")
-            
-            # Filtrar orçamentos
-            if busca:
-                orcamentos_filtrados = [orc for orc in orcamentos if busca.lower() in orc['nome_exibicao'].lower()]
-            else:
-                orcamentos_filtrados = orcamentos
-            
-            if not orcamentos_filtrados:
-                st.warning("🔍 Nenhum orçamento encontrado com esse filtro")
-            else:
-                # Exibir orçamentos
-                for orc in orcamentos_filtrados:
-                    with st.container():
-                        st.markdown('<div class="card">', unsafe_allow_html=True)
-                        
-                        col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
-                        
-                        with col1:
-                            st.write(f"**📋 {orc['nome_exibicao']}**")
-                            st.caption(f"Arquivo: {orc['nome_arquivo']}")
-                        
-                        with col2:
-                            if st.button("📂 Abrir", key=f"abrir_{orc['nome_arquivo']}"):
-                                try:
-                                    orcamento = carregar_orcamento(orc['nome_arquivo'])
-                                    navegar_para('paineis', orcamento)
-                                except Exception as e:
-                                    st.error(f"Erro ao abrir: {str(e)}")
-                        
-                        with col3:
-                            if st.button("📤 Exportar", key=f"export_{orc['nome_arquivo']}"):
-                                try:
-                                    orcamento = carregar_orcamento(orc['nome_arquivo'])
-                                    buffer = BytesIO()
-                                    exportar_orcamento_para_excel(orcamento, buffer)
-                                    buffer.seek(0)
-                                    
-                                    st.download_button(
-                                        label="⬇️ Download Excel",
-                                        data=buffer.getvalue(),
-                                        file_name=f"{orcamento.nome}.xlsx",
-                                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                        key=f"download_{orc['nome_arquivo']}"
-                                    )
-                                except Exception as e:
-                                    st.error(f"Erro na exportação: {str(e)}")
-                        
-                        with col4:
-                            if st.button("🗑️ Excluir", key=f"excluir_{orc['nome_arquivo']}"):
-                                try:
-                                    excluir_orcamento(orc['nome_arquivo'])
-                                    st.success("✅ Orçamento excluído!")
-                                    st.rerun()
-                                except Exception as e:
-                                    st.error(f"Erro ao excluir: {str(e)}")
-                        
-                        st.markdown('</div>', unsafe_allow_html=True)
-                        
-    except Exception as e:
-        st.error(f"❌ Erro ao carregar orçamentos: {str(e)}")
+            orcamentos_filtrados = orcamentos
+        
+        if not orcamentos_filtrados:
+            st.warning("🔍 Nenhum orçamento encontrado com esse filtro")
+        else:
+            # Exibir orçamentos
+            for orc in orcamentos_filtrados:
+                with st.container():
+                    st.markdown('<div class="card">', unsafe_allow_html=True)
+                    
+                    col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+                    
+                    with col1:
+                        st.write(f"**📋 {orc['nome']}**")
+                        st.caption(f"Criado em: {orc['criado_em'][:10]}")
+                    
+                    with col2:
+                        if st.button("📂 Abrir", key=f"abrir_{orc['id']}"):
+                            navegar_para('paineis', orc)
+                    
+                    with col3:
+                        if st.button("📤 Exportar", key=f"export_{orc['id']}"):
+                            st.info("🚧 Em desenvolvimento - Exportação em breve!")
+                    
+                    with col4:
+                        if st.button("🗑️ Excluir", key=f"excluir_{orc['id']}"):
+                            if db.excluir_orcamento(orc['id']):
+                                st.success("✅ Orçamento excluído!")
+                                st.rerun()
+                            else:
+                                st.error("❌ Erro ao excluir orçamento")
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
 
 def tela_paineis():
     """Tela de gerenciamento de painéis"""
